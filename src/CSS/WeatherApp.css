@@ -1,0 +1,498 @@
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  padding: 0rem;
+  margin: 0rem;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: repeating-linear-gradient(#202b3c, #0b121e);
+  width: 100vw;
+  height: 100vh;
+}
+
+#weatherApp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+#weatherApp-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: #0b121e;
+  border-radius: 1.5rem;
+  width: 50rem;
+  height: 37rem;
+  padding: 2rem;
+}
+
+/* ------------------------------------------------------------------------------------- */
+
+/* Search-Div */
+
+#search-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#search-div input {
+  color: white;
+  /* background: #202b3c; */
+  background: repeating-linear-gradient(#202b3c, #0b121e);
+  border: none;
+  border-radius: 0.7rem 0rem 0rem 0.7rem;
+  outline: none;
+  width: 43rem;
+  height: 2.6rem;
+}
+
+input[placeholder] {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01rem;
+  padding-left: 1rem;
+}
+
+#search-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  /* background: #202b3c; */
+  background: repeating-linear-gradient(#202b3c, #0b121e);
+  border-radius: 0rem 0.7rem 0.7rem 0rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------------------------- */
+
+/* Temp-Div */
+
+#temp-div {
+  display: flex;
+  border-right: 1px solid #202b3c;
+  border-left: 1px solid #202b3c;
+  /* border: 1px solid #202b3c; */
+  border-radius: 1.5rem;
+  width: 46rem;
+  height: 15rem;
+  margin-top: 2rem;
+}
+
+#left-temp-div {
+  width: 23rem;
+  height: 15rem;
+}
+
+#left-top-temp-div {
+  width: 23rem;
+  height: 8rem;
+  padding: 1rem 2rem;
+}
+
+#left-top-temp-div .currentTime {
+  color: #757575;
+  border: 1px;
+  border-radius: 0.3rem;
+  font-weight: 900;
+  width: fit-content;
+  height: 1.2rem;
+}
+
+#left-top-temp-div .currentCity {
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 3.5rem;
+}
+
+#left-top-temp-div .currentDate {
+  color: #757575;
+  font-weight: 600;
+}
+
+#left-bottom-temp-div {
+  font-size: 5rem;
+  font-weight: 600;
+  width: 23rem;
+  height: 7rem;
+  padding-left: 2rem;
+}
+
+#right-temp-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 23rem;
+  height: 15rem;
+}
+
+#right-temp-div img {
+  width: 10rem;
+  height: 10rem;
+}
+
+@keyframes svg-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------------------------- */
+
+/* Forecast-Div */
+
+/* #forecast-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+    background: #202b3c;
+    border: 1px;
+    border-radius: 1.5rem;
+    width: 46rem;
+    height: 15rem;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+#forecast-text {
+    color: #757575;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+#forecast-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 42rem;
+    height: 8rem;
+}
+
+.forecast-list-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 7rem;
+    height: 7.4rem;
+}
+
+.border-right {
+    border-right: 1px solid grey;
+}
+
+.weather-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 7rem;
+    height: 3.5rem;
+}
+
+.forecast-list-items img {
+    width: 3rem;
+    height: 3rem;
+}
+
+.forecast-time {
+    color: #757575;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.forecast-temp {
+    font-size: 1.6rem;
+    font-weight: 600;
+} */
+
+/* ------------------------------------------------------------------------------------- */
+
+/* Air-Condition */
+
+#airCondition-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  /* background: #202b3c; */
+  background: repeating-linear-gradient(#0b121e, #202b3c);
+  border: 1px;
+  border-radius: 1.5rem;
+  width: 46rem;
+  height: 11rem;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+#airCondition-text {
+  color: #757575;
+  font-size: 0.87rem;
+  font-weight: 600;
+}
+
+#airCondition-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 42rem;
+  height: 5rem;
+}
+
+.airCondition-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: fit-content;
+  height: 7rem;
+  padding: 1rem;
+}
+
+.chanceOfRain-img-text {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: fit-content;
+  height: 3rem;
+}
+
+.chanceOfRain-img-text img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.chanceOfRain-text {
+  color: #757575;
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+}
+
+.chanceOfRain-per {
+  font-size: 2.1rem;
+  font-weight: 600;
+  padding-left: 2.5rem;
+}
+
+.wind-img-text {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: fit-content;
+  height: 3rem;
+}
+
+.wind-img-text img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.wind-text {
+  color: #757575;
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+}
+
+.wind-speed {
+  font-size: 2.1rem;
+  font-weight: 600;
+  padding-left: 2.5rem;
+}
+
+/* Add User Submit Successfully PopUp Section*/
+#popUp {
+  display: none;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background: #202b3c;
+  border: none;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 700px;
+  height: 250px;
+  font-size: 1.93rem;
+}
+
+#popUp h1 {
+  color: #0b121e;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+#popUp img {
+  width: 4rem;
+  height: 4rem;
+}
+
+.popUpBtn-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 2.8rem;
+}
+
+#popUpBtn {
+  font-size: 0.88rem;
+  width: 8rem;
+  height: 2.8rem;
+  background: repeating-linear-gradient(#0b121e, #202b3d, #0b121e);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+
+
+/* Media Query */
+@media (max-width: 992px) {
+  #weatherApp-box {
+    width: 37rem;
+  }
+
+  #search-div input {
+    width: 30.5rem;
+  }
+
+  #temp-div {
+    width: 33rem;
+  }
+
+  #left-temp-div {
+    width: 16rem;
+  }
+
+  #left-top-temp-div {
+    width: 16rem;
+  }
+
+  #left-bottom-temp-div {
+    width: 16rem;
+  }
+
+  #right-temp-div {
+    width: 16rem;
+  }
+
+  #airCondition-div {
+    width: 33rem;
+  }
+
+  #airCondition-list {
+    width: 29rem;
+  }
+
+  #popUp {
+    width: 531px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    height: 100%;
+  }
+
+  #weatherApp-box {
+    width: 25rem;
+    height: 60.5rem;
+  }
+
+  #search-div input {
+    width: 18.5rem;
+  }
+
+  #temp-div {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #202b3c;
+    border-bottom: 1px solid #202b3c;
+    border-right: 0px solid #202b3c;
+    border-left: 0px solid #202b3c;
+    width: 20.5rem;
+    height: 30rem;
+  }
+
+  #left-temp-div {
+    width: 20.5rem;
+    height: 15rem;
+  }
+
+  #left-top-temp-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 20.5rem;
+    height: 8rem;
+  }
+
+  #left-bottom-temp-div {
+    display: flex;
+    justify-content: center;
+    width: 20.5rem;
+    height: 7rem;
+  }
+
+  #right-temp-div {
+    width: 20.5rem;
+    height: 15rem;
+  }
+
+  #right-temp-div img {
+    width: 9.5rem;
+    height: 9.5rem;
+  }
+
+  #airCondition-div {
+    justify-content: flex-start;
+    align-items: center;
+    width: 20.5rem;
+    height: 20rem;
+  }
+
+  .airCondition-items {
+    align-items: center;
+    width: 100%;
+  }
+
+  #airCondition-list {
+    flex-direction: column;
+    width: 20.5rem;
+    height: 14rem;
+  }
+
+  .chanceOfRain-per {
+    padding-left: 0rem;
+  }
+
+  .wind-speed {
+    padding-left: 0rem;
+  }
+
+  #popUp {
+    width: 340px;
+  }
+}
