@@ -277,7 +277,7 @@ const WeatherApp = () => {
         {/* Sign Up Successfully PopUp Section*/}
         <aside id="popUp" style={{ display: popUp.display }}>
           <img src={CloudError_icon} alt="" />
-          <h1>Please check your internet connection.</h1>
+          <h1>Check internet connection / Enter valid city</h1>
           <div className="popUpBtn-div">
             <button id="popUpBtn" onClick={onPopUp}>
               OK

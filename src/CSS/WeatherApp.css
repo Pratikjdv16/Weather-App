@@ -9,7 +9,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: repeating-linear-gradient(#202b3c, #0b121e);
   width: 100vw;
   height: 100vh;
 }
@@ -30,8 +29,9 @@ body {
   color: white;
   background: #0b121e;
   border-radius: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 50rem;
-  height: 37rem;
+  height: fit-content;
   padding: 2rem;
 }
 
@@ -364,8 +364,6 @@ input[placeholder] {
   cursor: pointer;
 }
 
-
-
 /* Media Query */
 @media (max-width: 992px) {
   #weatherApp-box {
@@ -411,16 +409,21 @@ input[placeholder] {
 
 @media (max-width: 600px) {
   body {
-    height: 100%;
+    align-items: flex-start;
+  }
+
+  #weatherApp {
+    margin: 1rem 0rem;
   }
 
   #weatherApp-box {
-    width: 25rem;
-    height: 60.5rem;
+    justify-content: flex-start;
+    width: 23rem;
+    height: fit-content;
   }
 
   #search-div input {
-    width: 18.5rem;
+    width: 16.5rem;
   }
 
   #temp-div {
@@ -431,12 +434,12 @@ input[placeholder] {
     border-bottom: 1px solid #202b3c;
     border-right: 0px solid #202b3c;
     border-left: 0px solid #202b3c;
-    width: 20.5rem;
+    width: 18.5rem;
     height: 30rem;
   }
 
   #left-temp-div {
-    width: 20.5rem;
+    width: 18.5rem;
     height: 15rem;
   }
 
@@ -445,19 +448,19 @@ input[placeholder] {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 20.5rem;
+    width: 18.5rem;
     height: 8rem;
   }
 
   #left-bottom-temp-div {
     display: flex;
     justify-content: center;
-    width: 20.5rem;
+    width: 18.5rem;
     height: 7rem;
   }
 
   #right-temp-div {
-    width: 20.5rem;
+    width: 18.5rem;
     height: 15rem;
   }
 
@@ -469,7 +472,7 @@ input[placeholder] {
   #airCondition-div {
     justify-content: flex-start;
     align-items: center;
-    width: 20.5rem;
+    width: 18.5rem;
     height: 20rem;
   }
 
@@ -480,7 +483,7 @@ input[placeholder] {
 
   #airCondition-list {
     flex-direction: column;
-    width: 20.5rem;
+    width: 18.5rem;
     height: 14rem;
   }
 
@@ -494,5 +497,10 @@ input[placeholder] {
 
   #popUp {
     width: 340px;
+    margin-top: 12rem;
+  }
+
+  #popUp h1 {
+    font-size: 1.5rem;
   }
 }
