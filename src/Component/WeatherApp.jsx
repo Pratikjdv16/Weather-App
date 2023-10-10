@@ -165,6 +165,7 @@ const WeatherApp = () => {
               value={state.city}
               onChange={inputChange}
               placeholder="Search for cities"
+              autoComplete="off"
             />
             <button id="search-btn" onClick={saveCity}>
               <svg
