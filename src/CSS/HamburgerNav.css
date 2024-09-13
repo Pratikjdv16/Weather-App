@@ -1,0 +1,36 @@
+.hamburger {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0rem;
+  left: 0rem;
+  width: 100%;
+  height: 3.4rem;
+  padding: 0rem 1.1rem;
+  transition: background-color 0.3s ease;
+  z-index: 3;
+}
+
+.hamburgerNav-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hamburger.blur {
+  backdrop-filter: blur(24px);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.hamburger.noBlur {
+  background-color: rgba(255, 255, 255);
+}
+
+@media (max-width: 600px) {
+  .hamburger {
+    display: flex;
+  }
+}

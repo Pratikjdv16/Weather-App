@@ -1,290 +1,641 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../CSS/WeatherApp.css";
-
-import Humidity_icon from "../Img/humidity_icon.png";
-import Wind_icon from "../Img/wind-icon.png";
-import Sun_icon from "../Img/sun_icon.png";
-import FewClouds_icon from "../Img/fewClouds_icon.png";
-import scatteredClouds_icon from "../Img/scatteredClouds_icon.png";
-import shower_icon from "../Img/shower_Rain_icon.png";
-import rain_icon from "../Img/rainCloud_icon.png";
-import thunderstorm_icon from "../Img/thunderstorm_icon.png";
-import snow_icon from "../Img/snow_icon.png";
-import mist_icon from "../Img/mist_icon.png";
-import CloudError_icon from "../Img/cloudError-icon.png";
+import axios from "axios";
+import LoadingState from "./LoadingState";
 
 const WeatherApp = () => {
+  const [city, setCity] = useState("Pune");
+
+  const [error, setError] = useState(false);
+
+  const [displayOfLoadingState, setDisplayOfLoadingState] = useState("none");
+
+  const [allForecastData, setAllForecastData] = useState(null);
+
+  const [currentWeatherData, setCurrentWeatherData] = useState(null);
+
+  const [sysTime, setSysTime] = useState({
+    sunriseTime: "00:00",
+    sunsetTime: "00:00",
+  });
+
+  const [humidityStatus, setHumidityStatus] = useState({
+    text: "Low",
+    icon: "🌵",
+  });
+
+  // const [windSpeedStatus, setWindSpeedStatus] = useState({
+  //   text: "Low",
+  //   icon: "🍂",
+  // });
+
+  const [windDirection, setWindDirection] = useState("N");
+
+  const [visibilityStatus, setVisibilityStatus] = useState({
+    text: "Low",
+    icon: "🌫️",
+  });
+
+  const [todayForecastData, setTodayForecastData] = useState([]);
+
+  const [weeklyForecastData, setWeeklyForecastData] = useState([]);
+
+  const [forecastDisplay, setForecastDisplay] = useState({
+    todayForecast: true,
+    weekForecast: false,
+  });
+
+  const screenSize = window.innerWidth;
+
+  //=== Get currentDate
   const newDate = new Date();
-  const currDay = newDate.getDate();
-  const currMonth = newDate.getMonth();
+  const currDay =
+    newDate.getDate() < 10 ? `0${newDate.getDate()}` : newDate.getDate();
+  const currMonth =
+    newDate.getMonth() < 10
+      ? `0${newDate.getMonth() + 1}`
+      : newDate.getMonth() + 1;
   const currYear = newDate.getFullYear();
-  const currHours = newDate.getHours();
-  const currMin = newDate.getMinutes();
+  const currHour =
+    newDate.getHours() < 10 ? `0${newDate.getHours()}` : newDate.getHours();
+  const currMin =
+    newDate.getMinutes() < 10
+      ? `0${newDate.getMinutes()}`
+      : newDate.getMinutes();
+  const currTime = `${currHour}:${currMin}`;
+  const allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const currDate = `${currYear}-${currMonth}-${currDay}`;
 
-  let func = (index) => {
-    let arr = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "July",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return arr[index];
-  };
-
-  const currDate = `${currDay} ${func(currMonth)} ${currYear} `;
-  const currTime = `${currHours} : ${currMin}`;
-
-  const initialState = {
-    date: currDate,
-    city: "",
-    name: "----",
-    degree: "--",
-    humidity: "--",
-    wind: "--",
-  };
-
-  const [state, setState] = useState(initialState);
-
-  const [wIcon, setWIcon] = useState(Sun_icon);
-
-  const [style, setStyle] = useState({
-    display: "none",
+  const axiosInstance = axios.create({
+    baseURL: `https://api.openweathermap.org/data/2.5`,
+    timeout: 10000,
   });
 
-  const [popUp, setPopUp] = useState({
-    display: "none",
-  });
+  // Add a request interceptor
+  axiosInstance.interceptors.request.use(
+    (config) => {
+      // Optionally set a loading state here if you want to manage loading globally
+      setDisplayOfLoadingState("flex"); // Dispatch action to set loading to true
+      return config;
+    },
+    (error) => {
+      // Handle the request error
+      console.log("Request Error");
+      setDisplayOfLoadingState("none"); // Dispatch action to set loading to true
+      return Promise.reject(error);
+    }
+  );
 
-  const inputChange = (event) => {
-    console.log(event.target.value);
-    setState({ ...state, city: event.target.value });
-  };
+  // Add a response interceptor
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      // Handle the response
+      setDisplayOfLoadingState("none");
+      return response;
+    },
+    (error) => {
+      // Handle global errors
+      setDisplayOfLoadingState("none");
+      return Promise.reject(error);
+    }
+  );
 
-  const saveCity = () => {
-    console.log("Search City");
-    if (style.display === "none" && state.city === "") {
-      return false;
-    } else {
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${state.city}&units=metric&appid=03c0c3d86ab675d52fcbc604ab790abb`
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
+  //=== On Enter key press
+  const handleEnterKeyPress = async (event) => {
+    try {
+      if (event.key === "Enter") {
+        // Get current weather data
+        const getCurrentWeatherData = await axiosInstance.get(
+          `/weather?q=${city}&units=metric&appid=03c0c3d86ab675d52fcbc604ab790abb`
+        );
+        setCurrentWeatherData(getCurrentWeatherData.data);
 
-          if (
-            data.weather[0].icon === "01d" ||
-            data.weather[0].icon === "01n"
-          ) {
-            setWIcon(Sun_icon);
-          } else if (
-            data.weather[0].icon === "02d" ||
-            data.weather[0].icon === "02n"
-          ) {
-            setWIcon(FewClouds_icon);
-          } else if (
-            data.weather[0].icon === "03d" ||
-            data.weather[0].icon === "03n"
-          ) {
-            setWIcon(scatteredClouds_icon);
-          } else if (
-            data.weather[0].icon === "04d" ||
-            data.weather[0].icon === "04n"
-          ) {
-            setWIcon(scatteredClouds_icon);
-          } else if (
-            data.weather[0].icon === "09d" ||
-            data.weather[0].icon === "09n"
-          ) {
-            setWIcon(shower_icon);
-          } else if (
-            data.weather[0].icon === "10d" ||
-            data.weather[0].icon === "10n"
-          ) {
-            setWIcon(rain_icon);
-          } else if (
-            data.weather[0].icon === "11d" ||
-            data.weather[0].icon === "11n"
-          ) {
-            setWIcon(thunderstorm_icon);
-          } else if (
-            data.weather[0].icon === "13d" ||
-            data.weather[0].icon === "13n"
-          ) {
-            setWIcon(snow_icon);
-          } else if (
-            data.weather[0].icon === "50d" ||
-            data.weather[0].icon === "50n"
-          ) {
-            setWIcon(mist_icon);
-          } else {
-            setWIcon(Sun_icon);
-          }
-
-          setState({
-            ...state,
-            name: data.name,
-            degree: Math.floor(data.main.temp),
-            humidity: Math.floor(data.main.humidity),
-            wind: Math.floor(data.wind.speed),
-          });
-        })
-        .catch((error) => {
-          setStyle({ display: "none" });
-          setPopUp({ display: "flex" });
-        });
-      setStyle({ display: "flex" });
+        // Get all forecast data
+        const getAllForecastData = await axiosInstance.get(
+          `/forecast?q=${city}&units=metric&appid=03c0c3d86ab675d52fcbc604ab790abb`
+        );
+        setAllForecastData(getAllForecastData.data.list);
+      }
+    } catch (error) {
+      setError(true);
     }
   };
 
-  // Pop-up event
-  let onPopUp = () => {
-    setPopUp({ display: "none" });
-    setState(initialState);
+  //=== useEffect
+
+  const defaultGetData = async () => {
+    try {
+      // Get current weather data
+      const getCurrentWeatherData = await axiosInstance.get(
+        `/weather?q=${city}&units=metric&appid=03c0c3d86ab675d52fcbc604ab790abb`
+      );
+      setCurrentWeatherData(getCurrentWeatherData.data);
+
+      // Get all forecast data
+      const getAllForecastData = await axiosInstance.get(
+        `/forecast?q=${city}&units=metric&appid=03c0c3d86ab675d52fcbc604ab790abb`
+      );
+      setAllForecastData(getAllForecastData.data.list);
+    } catch (error) {
+      setError(true);
+    }
   };
+
+  const getSycTime = () => {
+    const riseTime = currentWeatherData.sys.sunrise;
+    const setTime = currentWeatherData.sys.sunset;
+
+    const sunriseUTC = new Date(riseTime * 1000);
+    const sunsetUTC = new Date(setTime * 1000);
+
+    const sunriseTime = sunriseUTC.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    const sunsetTime = sunsetUTC.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    // console.log(
+    //   "sunriseTime",
+    //   `${sunriseTime.split(":")[0]}:${sunriseTime.split(":")[1]}`
+    // );
+    // console.log(
+    //   "sunsetTime",
+    //   `${sunsetTime.split(":")[0]}:${sunsetTime.split(":")[1]}`
+    // );
+
+    setSysTime({
+      sunriseTime: `${sunriseTime.split(":")[0]}:${sunriseTime.split(":")[1]}`,
+      sunsetTime: `${sunsetTime.split(":")[0]}:${sunsetTime.split(":")[1]}`,
+    });
+  };
+
+  useEffect(() => {
+    defaultGetData();
+  }, []);
+
+  useEffect(() => {
+    if (currentWeatherData) {
+      getSycTime();
+
+      if (currentWeatherData.main.humidity < 30) {
+        setHumidityStatus({
+          text: "Low",
+          icon: "🌵",
+        });
+      } else if (
+        currentWeatherData.main.humidity > 30 &&
+        currentWeatherData.main.humidity < 60
+      ) {
+        setHumidityStatus({
+          text: "Normal",
+          icon: "🌥️",
+        });
+      } else if (currentWeatherData.main.humidity > 60) {
+        setHumidityStatus({
+          text: "High",
+          icon: "💧",
+        });
+      }
+
+      const degree = currentWeatherData.wind.deg;
+
+      if (degree >= 0 && degree < 11.25) {
+        setWindDirection("N");
+      } else if (degree >= 11.25 && degree < 33.75) {
+        setWindDirection("NNE");
+      } else if (degree >= 33.75 && degree < 56.25) {
+        setWindDirection("NE");
+      } else if (degree >= 56.25 && degree < 78.25) {
+        setWindDirection("ENE");
+      } else if (degree >= 78.25 && degree < 101.25) {
+        setWindDirection("E");
+      } else if (degree >= 101.25 && degree < 123.75) {
+        setWindDirection("ESE");
+      } else if (degree >= 123.75 && degree < 146.25) {
+        setWindDirection("SE");
+      } else if (degree >= 146.25 && degree < 168.75) {
+        setWindDirection("SSE");
+      } else if (degree >= 168.75 && degree < 191.25) {
+        setWindDirection("S");
+      } else if (degree >= 191.25 && degree < 213.75) {
+        setWindDirection("SSW");
+      } else if (degree >= 213.75 && degree < 236.25) {
+        setWindDirection("SW");
+      } else if (degree >= 236.25 && degree < 258.75) {
+        setWindDirection("WSW");
+      } else if (degree >= 258.75 && degree < 281.25) {
+        setWindDirection("W");
+      } else if (degree >= 281.25 && degree < 303.75) {
+        setWindDirection("WNW");
+      } else if (degree >= 303.75 && degree < 326.25) {
+        setWindDirection("NW");
+      } else if (degree >= 326.25 && degree < 348.75) {
+        setWindDirection("NNW");
+      } else if (degree >= 348.75 && degree <= 360) {
+        setWindDirection("N");
+        return "N";
+      }
+
+      if ((currentWeatherData.visibility / 1000).toFixed(1) < 1) {
+        setVisibilityStatus({
+          text: "Low",
+          icon: "🌫️",
+        });
+      } else if (
+        (currentWeatherData.visibility / 1000).toFixed(1) > 1 &&
+        (currentWeatherData.visibility / 1000).toFixed(1) < 10
+      ) {
+        setVisibilityStatus({
+          text: "Normal",
+          icon: "👀",
+        });
+      } else if ((currentWeatherData.visibility / 1000).toFixed(1) > 10) {
+        setVisibilityStatus({
+          text: "High",
+          icon: "🌞",
+        });
+      }
+    }
+  }, [currentWeatherData]);
+
+  useEffect(() => {
+    if (allForecastData) {
+      const todayData = allForecastData.filter((value) => {
+        const date = value.dt_txt.split(" ");
+        if (date[0] === currDate) {
+          // console.log("Today forecast data: ", value);
+          return value;
+        } else {
+          return null;
+        }
+      });
+
+      const weeklyData = allForecastData.filter((value) => {
+        const time = value.dt_txt.split(" ");
+        if (time[1] === "12:00:00") {
+          // console.log("Weekly forecast data: ", value);
+          return value;
+        } else {
+          return null;
+        }
+      });
+
+      setTodayForecastData(todayData);
+      setWeeklyForecastData(weeklyData);
+    }
+  }, [allForecastData]);
+
+  useEffect(() => {
+    const projectBoxes = document.querySelectorAll(".animationBox");
+
+    if (currentWeatherData) {
+      const observer = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.1,
+        }
+      );
+
+      projectBoxes.forEach((box) => {
+        observer.observe(box);
+      });
+
+      return () => {
+        projectBoxes.forEach((box) => {
+          observer.unobserve(box);
+        });
+      };
+    }
+  }, [currentWeatherData, forecastDisplay]);
+
+  useEffect(() => {
+    const iconBox = document.querySelectorAll(".weatherIconAnimationBox");
+
+    if (currentWeatherData) {
+      const observer = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animateIcon");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.1,
+        }
+      );
+
+      iconBox.forEach((box) => {
+        observer.observe(box);
+      });
+
+      return () => {
+        iconBox.forEach((box) => {
+          observer.unobserve(box);
+        });
+      };
+    }
+  }, [currentWeatherData]);
 
   return (
     <>
       <section id="weatherApp">
         <section id="weatherApp-box">
-          <div id="search-div">
-            <input
-              type="text"
-              id="search-input"
-              name="city"
-              value={state.city}
-              onChange={inputChange}
-              placeholder="Search for cities"
-              autoComplete="off"
-            />
-            <button id="search-btn" onClick={saveCity}>
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 17 18"
-                className=""
-                xmlns="http://www.w3.org/2000/svg"
+          <div className="weatherAppLeftBox">
+            {/* Search Box */}
+            <div className="search-div">
+              <i className="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                id="search-input"
+                name="city"
+                value={city}
+                onChange={(event) => setCity(event.target.value.trim())}
+                onKeyDown={handleEnterKeyPress}
+                placeholder="Search for places..."
+                autoComplete="off"
+              />
+            </div>
+            <div className="weatherImageDiv">
+              {currentWeatherData ? (
+                <img
+                  className="weatherIconAnimationBox"
+                  src={`https://openweathermap.org/img/wn/${currentWeatherData.weather[0].icon}@2x.png`}
+                  alt="Weather_Icon"
+                />
+              ) : null}
+            </div>
+            <div className="temperatureDiv">
+              <span>
+                {currentWeatherData
+                  ? parseInt(currentWeatherData.main.temp)
+                  : "0"}
+                &deg;C
+              </span>
+            </div>
+            <div className="currentDateDiv">
+              <span>
+                {allDays[newDate.getDay()]},{" "}
+                <span style={{ color: "#b8b8b8" }}>{currTime}</span>
+              </span>
+            </div>
+          </div>
+          <div className="weatherAppRightBox">
+            <div className="forecastNav">
+              <span
+                style={
+                  forecastDisplay.todayForecast === true
+                    ? { color: "black", borderBottom: "2px solid black" }
+                    : { color: "#c5c5c5", borderBottom: "none" }
+                }
+                onClick={() =>
+                  setForecastDisplay({
+                    todayForecast: true,
+                    weekForecast: false,
+                  })
+                }
               >
-                <g fill="grey" fillRule="evenodd">
-                  <path
-                    className="_34RNph"
-                    d="m11.618 9.897l4.225 4.212c.092.092.101.232.02.313l-1.465 1.46c-.081.081-.221.072-.314-.02l-4.216-4.203"
-                  ></path>
-                  <path
-                    className="_34RNph"
-                    d="m6.486 10.901c-2.42 0-4.381-1.956-4.381-4.368 0-2.413 1.961-4.369 4.381-4.369 2.42 0 4.381 1.956 4.381 4.369 0 2.413-1.961 4.368-4.381 4.368m0-10.835c-3.582 0-6.486 2.895-6.486 6.467 0 3.572 2.904 6.467 6.486 6.467 3.582 0 6.486-2.895 6.486-6.467 0-3.572-2.904-6.467-6.486-6.467"
-                  ></path>
-                </g>
-              </svg>
-            </button>
-          </div>
-          <div id="temp-div" style={{ display: style.display }}>
-            <div id="left-temp-div">
-              <div id="left-top-temp-div">
-                <p className="currentTime">
-                  <span className="hours">{currTime}</span>
-                  {/* <span className="am-pm"> PM</span> */}
-                </p>
-                <p className="currentCity">{state.name}</p>
-                <p className="currentDate">{state.date}</p>
-              </div>
-              <div id="left-bottom-temp-div">{state.degree}&deg;</div>
+                Today
+              </span>
+              <span
+                style={
+                  forecastDisplay.weekForecast === true
+                    ? { color: "black", borderBottom: "2px solid black" }
+                    : { color: "#c5c5c5", borderBottom: "none" }
+                }
+                onClick={() =>
+                  setForecastDisplay({
+                    todayForecast: false,
+                    weekForecast: true,
+                  })
+                }
+              >
+                Week
+              </span>
+              {screenSize > 600 ? (
+                <span className="clearSkyLogo">
+                  <i
+                    className="fa-regular fa-snowflake"
+                    style={{ fontSize: "1.6rem", marginRight: "0.5rem" }}
+                  ></i>
+                  Clear Sky
+                </span>
+              ) : null}
             </div>
-            <div id="right-temp-div">
-              <img src={wIcon} alt="" />
+
+            {forecastDisplay.todayForecast === true ? (
+              <div className="forecastDiv animationBox">
+                {todayForecastData.map((value, index) => (
+                  <div className="forecastDiv-items" key={index}>
+                    <span className="forecastDay">
+                      {`${value.dt_txt.split(" ")[1].split(":")[0]}:${
+                        value.dt_txt.split(" ")[1].split(":")[1]
+                      }`}
+                    </span>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
+                      alt="Weather_Icon"
+                    />
+                    <span className="forecastTemperature">
+                      {parseInt(value.main.temp_max)}
+                      &deg;{" "}
+                      <span
+                        className="forecastTemperature"
+                        style={{ color: "rgb(133 133 133)" }}
+                      >
+                        {parseInt(value.main.temp_min)}
+                        &deg;
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {forecastDisplay.weekForecast === true ? (
+              <div className="forecastDiv animationBox">
+                {weeklyForecastData
+                  ? weeklyForecastData.map((value, index) => {
+                      const getDay = new Date(
+                        value.dt_txt.split(" ")[0]
+                      ).getDay();
+                      console.log(getDay);
+                      return (
+                        <div className="forecastDiv-items" key={index}>
+                          <span className="forecastDay">{allDays[getDay]}</span>
+                          <img
+                            src={`https://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
+                            alt="Weather_Icon"
+                          />
+                          <span className="forecastTemperature">
+                            {parseInt(value.main.temp_max)}
+                            &deg;{" "}
+                            <span
+                              className="forecastTemperature"
+                              style={{ color: "rgb(133 133 133)" }}
+                            >
+                              {parseInt(value.main.temp_min)}
+                              &deg;
+                            </span>
+                          </span>
+                        </div>
+                      );
+                    })
+                  : null}
+              </div>
+            ) : null}
+
+            <div className="highlightsNav">
+              <span>Today's Highlights</span>
             </div>
-          </div>
-          {/* <div id="forecast-div">
-            <span id="forecast-text">TODAYS FORECAST</span>
-            <div id="forecast-list">
-              <div className="forecast-list-items border-right">
-                <span className="forecast-time">6:00 AM</span>
-                <span className="weather-icon">
-                  <img src={Cloudy2_icon} alt="" />
-                </span>
-                <span className="forecast-temp">25&deg;</span>
-              </div>
-              <div className="forecast-list-items border-right">
-                <span className="forecast-time">9:00 AM</span>
-                <span className="weather-icon">
-                  <img src={Cloudy_icon} alt="" />
-                </span>
-                <span className="forecast-temp">28&deg;</span>
-              </div>
-              <div className="forecast-list-items border-right">
-                <span className="forecast-time">12:00 PM</span>
-                <span className="weather-icon">
-                  <img src={Sun_icon} alt="" />
-                </span>
-                <span className="forecast-temp">33&deg;</span>
-              </div>
-              <div className="forecast-list-items border-right">
-                <span className="forecast-time">3:00 PM</span>
-                <span className="weather-icon">
-                  <img src={Sun_icon} alt="" />
-                </span>
-                <span className="forecast-temp">34&deg;</span>
-              </div>
-              <div className="forecast-list-items border-right">
-                <span className="forecast-time">6:00 PM</span>
-                <span className="weather-icon">
-                  <img src={Sun_icon} alt="" />
-                </span>
-                <span className="forecast-temp">29&deg;</span>
-              </div>
-              <div className="forecast-list-items">
-                <span className="forecast-time">9:00 PM</span>
-                <span className="weather-icon">
-                  <img src={Cloudy_icon} alt="" />
-                </span>
-                <span className="forecast-temp">23&deg;</span>
-              </div>
-            </div>
-          </div> */}
-          <div id="airCondition-div" style={{ display: style.display }}>
-            <span id="airCondition-text">AIR CONDITION</span>
-            <div id="airCondition-list">
-              <div className="airCondition-items">
-                <div className="chanceOfRain-img-text">
-                  <span>
-                    <img src={Humidity_icon} alt="." />
+
+            <div
+              className={
+                screenSize > 600
+                  ? "highlightsDiv"
+                  : "highlightsDiv animationBox"
+              }
+            >
+              {/* Humidity */}
+              <div
+                className={
+                  screenSize < 600
+                    ? "highlightsDiv-Items"
+                    : "highlightsDiv-Items animationBox"
+                }
+              >
+                <span className="top">Humidity</span>
+                <span className="middle">
+                  {currentWeatherData ? currentWeatherData.main.humidity : "0"}
+                  <span
+                    style={{
+                      position: "absolute",
+                      fontSize: "1.5rem",
+                      paddingLeft: "0.2rem",
+                      top: "0.3rem",
+                    }}
+                  >
+                    %
                   </span>
-                  <span className="chanceOfRain-text">Humidity</span>
-                </div>
-                <span className="chanceOfRain-per">{state.humidity}%</span>
+                </span>
+                <span className="bottom">
+                  {humidityStatus.text}{" "}
+                  <span className="levelIcon">{humidityStatus.icon}</span>
+                </span>
               </div>
-              <div className="airCondition-items">
-                <div className="wind-img-text">
-                  <span>
-                    <img src={Wind_icon} alt="." />
+
+              {/* Wind */}
+              <div
+                className={
+                  screenSize < 600
+                    ? "highlightsDiv-Items"
+                    : "highlightsDiv-Items animationBox"
+                }
+              >
+                <span className="top">Wind</span>
+                {/* Conversion Formula: 1 m/s = 3.6 km/h */}
+                <span className="middle">
+                  {currentWeatherData
+                    ? (currentWeatherData.wind.speed * 3.6).toFixed(2)
+                    : "0"}
+                  <span style={{ fontSize: "1.5rem", paddingLeft: "0.5rem" }}>
+                    km/h
                   </span>
-                  <span className="wind-text">Wind</span>
+                </span>
+
+                {/* <span className="bottom">
+                  {windSpeedStatus.text}{" "}
+                  <span className="levelIcon">{windSpeedStatus.icon}</span>
+                </span> */}
+
+                <div className="bottom">
+                  <i
+                    className="fa-solid fa-angles-up"
+                    style={
+                      currentWeatherData
+                        ? {
+                            transform: `rotate(${currentWeatherData.wind.deg}deg)`,
+                          }
+                        : {
+                            transform: "rotate(0deg)",
+                          }
+                    }
+                  ></i>
+                  <span style={{ marginLeft: "1rem" }}>{windDirection}</span>
                 </div>
-                <span className="wind-speed">{state.wind} km/h</span>
+              </div>
+
+              {/* Visibility */}
+              <div
+                className={
+                  screenSize < 600
+                    ? "highlightsDiv-Items"
+                    : "highlightsDiv-Items animationBox"
+                }
+              >
+                <span className="top">Visibility</span>
+                {/* Conversion Formula: 10000 m = 10 km */}
+                <span className="middle">
+                  {currentWeatherData
+                    ? (currentWeatherData.visibility / 1000).toFixed(1)
+                    : "0"}
+                  <span style={{ fontSize: "1.5rem", paddingLeft: "0.5rem" }}>
+                    km
+                  </span>
+                </span>
+                <span className="bottom">
+                  {visibilityStatus.text}{" "}
+                  <span className="levelIcon">{visibilityStatus.icon}</span>
+                </span>
+              </div>
+
+              <div
+                className={
+                  screenSize < 600
+                    ? "highlightsDiv-Items"
+                    : "highlightsDiv-Items animationBox"
+                }
+              >
+                <span className="top">Sunrise & Sunset</span>
+                <div className="sunrise_sunsetDiv">
+                  <i className="fa-solid fa-circle-chevron-up"></i>
+                  <span>{sysTime.sunriseTime} am</span>
+                </div>
+                <div className="sunrise_sunsetDiv">
+                  <i className="fa-solid fa-circle-chevron-down"></i>
+                  <span>{sysTime.sunsetTime} pm</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
-        {/* Sign Up Successfully PopUp Section*/}
-        <aside id="popUp" style={{ display: popUp.display }}>
-          <img src={CloudError_icon} alt="" />
-          <h1>Check internet connection / Enter valid city</h1>
-          <div className="popUpBtn-div">
-            <button id="popUpBtn" onClick={onPopUp}>
-              OK
-            </button>
-          </div>
-        </aside>
+
+        {displayOfLoadingState === "flex" ? (
+          <LoadingState displayOfLoadingState={displayOfLoadingState} />
+        ) : null}
+
+        {/* Popup Section */}
+        {error === true ? (
+          <aside id="popUp">
+            {/* <img src={CloudError_icon} alt="" /> */}
+            <h1>Check internet connection</h1>
+            <div className="popUpBtn-div">
+              <button id="popUpBtn" onClick={() => setError(false)}>
+                OK
+              </button>
+            </div>
+          </aside>
+        ) : null}
       </section>
     </>
   );
