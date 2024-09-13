@@ -428,7 +428,7 @@ const WeatherApp = () => {
                     className="fa-regular fa-snowflake"
                     style={{ fontSize: "1.6rem", marginRight: "0.5rem" }}
                   ></i>
-                  Clear Sky
+                  Clear sky
                 </span>
               ) : null}
             </div>

@@ -9,7 +9,7 @@
   height: 3.4rem;
   padding: 0rem 1.1rem;
   transition: background-color 0.3s ease;
-  z-index: 3;
+  z-index: 2;
 }
 
 .hamburgerNav-section {
